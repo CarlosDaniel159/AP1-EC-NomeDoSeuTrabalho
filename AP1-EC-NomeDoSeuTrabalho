@@ -1,0 +1,1104 @@
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#define MAX_CLIENTES 100
+#define MAX_CONTAS 200
+#define MAX_transacoes 1000
+
+//Clientes
+
+typedef struct{
+    char nome[50];
+    char endereco[100];
+    long int COD;
+    int TEL;
+    int DOC;
+    int ativo;
+} Cliente;
+Cliente clientes [MAX_CLIENTES];
+
+//Conta
+
+typedef struct{
+    int agencia;
+    int numConta;
+    double saldo;
+    int ativoConta;
+} Conta;
+Conta conta [MAX_CONTAS];
+
+//Transacoes
+
+typedef struct{
+    char type[15];
+    char description[100];
+    double valor;
+    int data;
+    long int COD;
+    int conta;
+    int ativoTransacoes;
+    time_t tempo;
+} Transacoes;
+Transacoes transacoes [MAX_transacoes];
+
+void menu(void);
+void gerenciarClientes(void);
+void gerenciarContas(void);
+void cadastroCliente(void);
+void ordenarClientes(void);
+void listarClientes(void);
+void buscarClientes(void);
+void atualizarClientes(void);
+void excluirClientes(void);
+void cadastroConta(void);
+void ordenarContas(void);
+void listarContas(void);
+void buscarContas(void);
+void saques(void);
+void depositos(void);
+void transferencia(void);
+void extrato(void);
+int quantClientes = 0;
+int quantContas = 0;
+int quantTransacoes = 0;
+
+int main(){
+	menu();
+	return 0;
+}
+
+//Menu
+
+void menu(){
+	
+    char comando[2];
+
+    do {
+
+		system("cls");
+        printf("=============== Bem vindo! =================\n"
+               "Digite um comando para prosseguir:\n"
+               "C - Gerenciar Clientes\n"
+               "T - Gerenciar Contas\n"
+               "S - Sair\n");
+
+        scanf("%s",comando);
+        system("cls");
+
+        switch (comando[0])
+        {
+            case 'C':
+                gerenciarClientes();
+                break;
+            case 'c':
+                gerenciarClientes();
+                break;
+
+            case 'T':
+                gerenciarContas();
+                break;
+            case 't':
+                gerenciarContas();
+                break;
+
+            case 'S':
+            	system("cls");
+            	printf("Obrigado por usar nosso sistema, volte sempre!\n");
+                exit(0);
+            case 's':
+            	system("cls");
+            	printf("Obrigado por usar nosso sistema, volte sempre!\n");
+                exit(0);
+                break;
+        }
+
+    } while(comando[0] != 'S');
+    system("cls");
+}
+
+
+//Menu C
+
+
+void gerenciarClientes(void){
+    system("cls");      
+    char op1;
+     printf("============ Gerenciar Clientes ============\n");
+    printf("Digite um comando para prosseguir:\n");
+    printf("C - Cadastrar clientes\n");
+    printf("L - Listar todos os clientes cadastrados\n");                                   
+    printf("B - Buscar cliente ja cadastrado\n");
+    printf("A - Atualizar um cliente ja cadastrado\n");
+    printf("E - Excluir um cliente cadastrado\n");
+    printf("S - Sair\n");
+    fflush(stdin);
+    scanf("%c", &op1);
+    
+    //Atalho C
+    if (op1 == 'C' || op1 == 'c')
+    {
+        cadastroCliente();
+    }
+
+    //Atalho L
+    if (op1 == 'L' || op1 == 'l')
+    {
+        system("cls");
+        fflush(stdin);
+        int voltar;
+        ordenarClientes();
+        listarClientes();
+        printf("Nenhum outro cliente cadastrado!\n");
+        j:
+        printf("\nPara voltar aperte 0\n");
+        scanf("%d", &voltar);
+        if(voltar == 0)
+        {
+            gerenciarClientes();
+        }else{
+            printf("Valor invalido. Tente novamente:\n");
+            fflush(stdin);
+            goto j;
+        }
+    }
+    
+    //Atalho B
+    if (op1 == 'B' || op1 == 'b')
+    {
+        buscarClientes();
+    }
+
+    //Atalho A
+    if (op1 == 'A' || op1 == 'a')
+    {
+        atualizarClientes();
+    }
+
+    //Atalho E
+    if (op1 == 'E' || op1 == 'e')
+    {
+        excluirClientes();
+    }
+
+    //Atalho S
+    if (op1 == 'S' || op1 == 's')
+    {
+        fflush(stdin);
+        menu();
+    }
+    
+}
+
+//Menu T
+
+void gerenciarContas(void){
+    system("cls");
+    fflush(stdin);
+    char op1;
+    int op2; 
+    printf("Digite um comando para prosseguir:\n");
+    printf("R - Listagem de todas as contas cadastradas.\n");
+    printf("C - Cadastrar uma conta para um cliente.\n");
+    printf("L - Listar todas as contas de um cliente.\n");
+    printf("W - Realizar um saque em uma conta.\n");
+    printf("D - Realizar um deposito em uma conta.\n");
+    printf("T - Realizar transferencia entre contas.\n");
+    printf("E - Exibir extrato de uma conta.\n");
+    printf("S - Sair.\n");
+    scanf("%c", &op1);
+
+    //Atalho C
+    if (op1 == 'C' || op1 == 'c')
+    {
+    	system("cls");
+        printf("1 - Cadastrar conta\n");
+        printf("2 - Voltar ao menu\n");
+        fflush(stdin);
+        scanf("%d", &op2);
+        if (op2 == 1)
+        {
+            fflush(stdin);
+            cadastroConta();
+        }
+        if (op2 == 2)
+        {
+            gerenciarContas();
+        }
+    }
+
+    //Atalho R
+    if (op1 == 'R' || op1 == 'r')
+    {
+        system("cls");
+        fflush(stdin);
+        int voltar;
+        ordenarContas();
+        listarContas();
+        j:
+        printf("\nPara voltar aperte 0\n");
+        scanf("%d", &voltar);
+        if(voltar == 0)
+        {
+            gerenciarClientes();
+        }else{
+            printf("Valor invalido. Tente novamente:\n");
+            fflush(stdin);
+            goto j;
+        }
+    }
+
+    //Atalho D
+    if (op1 == 'D' || op1 == 'd')
+    {
+        depositos();
+    }
+
+    //Atalho W
+    if (op1 == 'W' || op1 == 'w')
+    {
+        system("cls");
+        saques();
+    }
+
+    //Atalho L
+    if (op1 == 'L' || op1 == 'l')
+    {
+        buscarContas();
+    }
+
+    //Atalho T
+    if (op1 == 'T' || op1 == 't')
+    {
+        transferencia();
+    }
+
+    //Atalho E
+    if (op1 == 'E' || op1 == 'e')
+    {
+        extrato();
+    }
+
+    //Atalho S
+    if (op1 == 'S' || op1 == 's')
+    {
+        menu();
+    }
+}
+
+//Cadastro de cliente
+void cadastroCliente(void){
+    char nome[50];
+    char endereco[100];
+    long int COD;
+    int TEL;
+    int DOC;
+    int op2;
+    int i, j, op3;
+    int codPERMITION;
+    do{
+        fflush(stdin);
+        system("cls");
+        printf("Nome: ");
+        fflush(stdin);
+        fgets(nome, sizeof(nome), stdin);
+        printf("Endereco: ");
+        fflush(stdin);
+        fgets(endereco, sizeof(endereco), stdin);
+        printf("Codigo cliente: ");
+        fflush(stdin);
+        scanf("%d", &COD);
+        printf("Telefone: ");
+        fflush(stdin);
+        scanf("%d", &TEL);
+        printf("CPF ou CNPJ: ");
+        fflush(stdin);
+        scanf("%d", &DOC);
+        for (j = 0; j < MAX_CLIENTES; j++)
+        {
+            if (COD == clientes[j].COD)
+            {
+                codPERMITION = 2;
+                break;
+            }         
+        }        
+        for (i = 0; i < MAX_CLIENTES; i++)
+        {
+            if (clientes[i].ativo == 0)
+            {
+                if (codPERMITION == 2)
+                {
+                    printf("Codigo ja cadastrado.\n");
+                    printf("Para tentar novamente aperte 1, ou 0 para sair:\n");
+                    fflush(stdin);
+                    scanf("%d", &op3);
+                    if(op3 == 1)
+                    {
+                        cadastroCliente();
+                    }
+                    if(op3 == 0)
+                    {
+                        gerenciarClientes();
+                    }
+                 }else{
+                    strcpy(clientes[i].nome, nome);
+                    strcpy(clientes[i].endereco, endereco);
+                    clientes[i].COD = COD;
+                    clientes[i].TEL = TEL;
+                    clientes[i].DOC = DOC;
+                    clientes[i].ativo = 1;
+                    quantClientes++;
+                    break;
+                }
+            }          
+        }
+        printf("\nPara outro cadastro, digite 1. Para sair digite 0:\n");
+        getchar();
+        scanf("%d", &op2);
+    }while(op2 != 0);
+    gerenciarClientes();
+}
+
+//Ordem de clientes
+void ordenarClientes(void){
+    int x, y, r;
+    char auxNome[50];
+    char auxEnd[50];
+    int auxCOD;
+    int auxTel;
+    int auxDOC;
+    int auxATV;
+    for(x = 0; x < quantClientes; x++){
+        for (y = x+1; y < quantClientes; y++){
+            r = strcmp(clientes[x].nome, clientes[y].nome);
+            if(r > 0){
+                strcpy(auxNome, clientes[x].nome);
+                strcpy(clientes[x].nome, clientes[y].nome);
+                strcpy(clientes[y].nome, auxNome);
+
+                strcpy(auxEnd, clientes[x].endereco);
+                strcpy(clientes[x].endereco, clientes[y].endereco);
+                strcpy(clientes[y].endereco, auxEnd);
+
+                auxCOD = clientes[x].COD;
+                clientes[x].COD = clientes[y].COD;
+                clientes[y].COD = auxCOD;
+
+                auxTel = clientes[x].TEL;
+                clientes[x].TEL = clientes[y].TEL;
+                clientes[y].TEL = auxTel;
+
+                auxDOC = clientes[x].DOC;
+                clientes[x].DOC = clientes[y].DOC;
+                clientes[y].DOC = auxDOC;  
+
+                auxATV = clientes[x].ativo;
+                clientes[x].ativo = clientes[y].ativo;
+                clientes[y].ativo = auxATV;            
+            }
+        }  
+    }
+}
+
+//Listagem de clientes
+void listarClientes(void){
+    system("cls");
+    int x;
+    for(x = 0; x < quantClientes; x++){
+        if (clientes[x].ativo == 0)
+        {
+            printf("Nenhum cliente cadastrado!\n");
+        }
+        if (clientes[x].ativo == 1)
+        {
+            printf("==========================================\n");
+            printf("Nome: %s\n", clientes[x].nome);
+            printf("Codigo: %d\n", clientes[x].COD);
+            printf("==========================================\n");
+        }       
+    }
+}
+
+//Buscar clientes
+void buscarClientes(void){
+    int COD, x, op1;
+    system("cls");
+    printf("Digite o codigo do cliente: \n");
+    fflush(stdin);
+    scanf("%d", &COD);
+    for(x = 0; x < quantClientes; x++){
+        if (clientes[x].ativo == 1)
+        {
+            if (COD == clientes[x].COD)
+            {
+                printf("=======================================\n");
+                printf("Nome: %s\n", clientes[x].nome);
+                printf("Endereco: %s\n", clientes[x].endereco);
+                printf("Telefone: %d\n\n", clientes[x].TEL);
+                printf("Documento: %d\n\n", clientes[x].DOC);
+                printf("Codigo: %d\n\n", clientes[x].COD);
+                printf("=======================================\n");
+            }          
+        }
+    }
+    printf("\nPara buscar mais clientes digite 0, ou 1 para sair\n");
+    fflush(stdin);
+    scanf("%d", &op1);
+    if (op1 == 0)
+    {
+            buscarClientes();
+    }
+    if (op1 == 1)
+    {
+        gerenciarClientes();
+    }
+}
+
+//Atualizar clientes
+void atualizarClientes(void){
+    long int COD, x, op;
+    char newName[50];
+    char newEnd[100];
+    int newCOD;
+    int newTEL;
+    int newDOC;
+    system("cls");
+    printf("Digite o codigo do cliente para atualizacao: \n");
+    fflush(stdin);
+    scanf("%d", &COD);
+    for(x = 0; x < quantClientes; x++){
+        if (clientes[x].ativo == 1)
+        {
+            if (COD == clientes[x].COD)
+            {
+                printf("Nome atualizado: ");
+                fflush(stdin);
+                fgets(newName, sizeof(newName), stdin);
+                printf("Endereco atualizado: ");
+                fflush(stdin);
+                fgets(newEnd, sizeof(newEnd), stdin);
+                printf("Codigo atualizado: ");
+                fflush(stdin);
+                scanf("%d", &newCOD);
+                printf("Telefone atualizado: ");
+                fflush(stdin);
+                scanf("%d", &newTEL);
+                printf("Documento atualizado: ");
+                fflush(stdin);
+                scanf("%d", &newDOC);
+
+                //Substituindo dados
+                strcpy(clientes[x].nome, newName);
+                strcpy(clientes[x].endereco, newEnd);
+                clientes[x].COD = newCOD;
+                clientes[x].TEL = newTEL;
+                clientes[x].DOC = newDOC;
+
+                //Confirmando
+                printf("\nCliente atualizado com sucesso!\n \n");
+                printf("Para sair aperte 0, ou 1 para continuar cadastrando.\n");
+                fflush(stdin);
+                scanf("%d", &op);
+                if (op == 0)
+                {
+                    fflush(stdin);
+                    gerenciarClientes();
+                }
+                if (op == 1)
+                {
+                    fflush(stdin);
+                    atualizarClientes();
+                }
+            }
+        }
+    }
+}
+
+//Excluir clientes
+void excluirClientes(void){
+    system("cls");
+    fflush(stdin);
+    int COD, x, op1, op2;
+    printf("Digite o codigo do cliente a ser excluido: \n");
+    fflush(stdin);
+    scanf("%d", &COD);
+    for ( x = 0; x < MAX_CLIENTES; x++)
+    {
+        if (clientes[x].ativo == 1)
+        {
+            if (COD == clientes[x].COD)
+            {
+                fflush(stdin);
+                printf("Nome: %s", clientes[x].nome);
+                printf("Endereco: %s", clientes[x].endereco);
+                printf("Codigo: %d \n", clientes[x].COD);
+                printf("Telefone: %d \n", clientes[x].TEL);
+                printf("Documento: %d \n", clientes[x].DOC);
+                printf("\nVoce realmente deseja excluir esse cliente?\n");
+                printf("Para confirmar digite 1, ou 0 para voltar ao menu\n");
+                scanf("%d", &op1);
+                if (op1 == 1)
+                {
+                    clientes[x].ativo = 0;
+                    
+                    //Confirmacao
+                    printf("Cliente excluido com sucesso!\n");
+                    printf("Para excluir mais clientes digite 1, ou 0 para sair. \n");
+                    fflush(stdin);
+                    scanf("%d", &op2);
+                    if (op2 == 1)
+                    {
+                        excluirClientes();
+                    }
+                    if (op2 == 0)
+                    {
+                        gerenciarClientes();
+                    }
+                }
+                if (op1 == 0)
+                {
+                    gerenciarClientes();
+                }
+                break;
+            }
+        }
+    }
+}     
+
+//Cadastro de conta
+void cadastroConta(void){
+    system("cls");
+    fflush(stdin);
+    long int COD, i, numConta, agencia;
+    int j, permit;
+    int op1, op2;
+    printf("Digite o codigo do cliente: \n");
+    scanf("%d", &COD);
+    for (i = 0; i < MAX_CLIENTES; i++)
+    {
+        if (clientes[i].ativo == 1)
+        {
+            if (COD == clientes[i].COD)
+            {
+                printf("Digite o numero da conta: \n");
+                fflush(stdin);
+                scanf("%d", &numConta);
+                printf("Digite a agencia: \n");
+                fflush(stdin);
+                scanf("%d", &agencia);
+                
+                //Verificando se ja existe
+                for (j = 0; j < MAX_CLIENTES; j++)
+                {
+                    if (numConta == conta[j].numConta && agencia == conta[j].agencia)
+                    {
+                        permit = 1;
+                        break;
+                    }
+                }
+                //Caso exista
+                if (permit == 1)
+                {
+                    printf("Conta ja existente\n");
+                    printf("Para: tentar novamente - 0 ou sair - 1 \n");
+                    fflush(stdin);
+                    scanf("%d", &op1);
+                    
+                    //Tentar novamente
+                    if (op1 == 0)
+                    {
+                        fflush(stdin);
+                        cadastroConta();
+                    }
+                    //Sair
+                    if (op1 == 0){
+                        fflush(stdin);
+                        gerenciarContas();
+                    }
+                }else{
+                    //cadastrar conta
+                    conta[i].numConta = numConta;
+                    conta[i].agencia = agencia;
+                    conta[i].saldo = 0;
+                    conta[i].ativoConta = 1;
+                    quantContas++;
+                    printf("Conta cadastrada com sucesso\n");
+                    printf("Para continuar cadastrando - 0\n");
+                    printf("Para sair - 1\n");
+                    fflush(stdin);
+                    scanf("%d", &op2);
+                    if (op2 == 1)
+                    {
+                        gerenciarContas();
+                    }
+                    if (op2 == 0)
+                    {
+                        cadastroConta();
+                    }
+                }
+            }
+        }     
+    }    
+}
+
+//Ordenar contas
+void ordenarContas(void){
+    int x, y, r;
+    char auxNome[50];
+    char auxEnd[50];
+    int auxCOD;
+    int auxTel;
+    int auxDOC;
+    int auxATV;
+    int auxConta;
+    int auxAgencia;
+    int auxSaldo;
+    int auxAtivo;
+
+    for(x = 0; x < quantClientes; x++){
+        for (y = x+1; y < quantClientes; y++){
+            r = strcmp(clientes[x].nome, clientes[y].nome);
+            if(r > 0){
+                //Trocando clientes
+                strcpy(auxNome, clientes[x].nome);
+                strcpy(clientes[x].nome, clientes[y].nome);
+                strcpy(clientes[y].nome, auxNome);
+
+                strcpy(auxEnd, clientes[x].endereco);
+                strcpy(clientes[x].endereco, clientes[y].endereco);
+                strcpy(clientes[y].endereco, auxEnd);
+
+                auxCOD = clientes[x].COD;
+                clientes[x].COD = clientes[y].COD;
+                clientes[y].COD = auxCOD;
+
+                auxTel = clientes[x].TEL;
+                clientes[x].TEL = clientes[y].TEL;
+                clientes[y].TEL = auxTel;
+
+                auxDOC = clientes[x].DOC;
+                clientes[x].DOC = clientes[y].DOC;
+                clientes[y].DOC = auxDOC;  
+
+                auxATV = clientes[x].ativo;
+                clientes[x].ativo = clientes[y].ativo;
+                clientes[y].ativo = auxATV;
+
+                //Trocando contas
+                auxConta = conta[x].numConta;
+                conta[x].numConta = conta[y].numConta;   
+                conta[y].numConta = auxConta;
+
+                auxAgencia = conta[x].agencia;
+                conta[x].agencia = conta[y].agencia;
+                conta[y].agencia = auxAgencia;
+
+                auxSaldo = conta[x].saldo;
+                conta[x].saldo = conta[y].saldo;
+                conta[y].saldo = auxSaldo;
+
+                auxAtivo = conta[x].ativoConta;
+                conta[x].ativoConta = conta[y].ativoConta;
+                conta[y].ativoConta = auxAtivo;
+            }
+        }  
+    }
+}
+
+//Listar as contas
+
+void listarContas(void){
+    system("cls");
+    int x, sairtecla;
+    for(x = 0; x < quantContas; x++){
+        if (conta[x].ativoConta == 0)
+        {
+            printf("Nenhuma conta cadastrado!\n");
+        }
+        if (conta[x].ativoConta == 1)
+        {
+            printf("==========================================\n");
+            printf("Nome: %s\n", clientes[x].nome);
+            printf("\nAgencia conta primaria: %d\n", conta[x].agencia);
+            printf("Numero conta primaria: %d\n", conta[x].numConta);
+            printf("Saldo conta primaria: %d\n", conta[x].saldo);
+            printf("==========================================\n");
+        }
+    }
+    printf("Digite 1 para sair: \n");
+    fflush(stdin);
+    scanf("%d", &sairtecla);
+    if (sairtecla == 1)
+    {
+        gerenciarContas();
+    }
+}
+
+//Listar as contas de um cliente
+void buscarContas(void){
+    int x, cod, optionSaida;
+    system("cls");
+    fflush(stdin);
+    printf("Digite o codigo do cliente: \n");
+    scanf("%d", &cod);
+    for(x = 0; x < quantClientes; x++)
+    {
+        if (clientes[x].ativo == 1)
+        {
+            if (cod == clientes[x].COD)
+            {
+                if (conta[x].ativoConta == 1)
+                {
+                    printf("===============================================\n");
+                    printf("Nome: %s\n", clientes[x].nome);
+                    printf("Numero da conta: %d\n", conta[x].numConta);
+                    printf("Agencia: %d\n", conta[x].agencia);
+                    printf("Saldo: %.2lf\n", conta[x].saldo);
+                    printf("===============================================\n");
+                }
+            }          
+        }
+    } 
+    printf("Para buscar mais clientes digite 0, ou 1 para sair: \n");
+    fflush(stdin);
+    scanf("%d", &optionSaida);
+    if (optionSaida == 0)
+    {
+        buscarContas();
+    }
+    if (optionSaida == 1)
+    {
+        gerenciarContas();
+    }
+}
+
+//Saque
+void saques(void){
+    system("cls");
+    fflush(stdin);
+    int x, y;
+    int AGENCIA, CONTA;
+    int saque;
+    char description[100];
+    int quantNotas200, quantNotas100, quantNotas50, quantNotas20, quantNotas10, quantNotas5, quantNotas2;
+    int op1, op2;
+    printf("Digite o numero da conta a qual deseja realizar um saque: \n");
+    scanf("%d", &CONTA);
+    printf("Digite a agencia correspondente: \n");
+    fflush(stdin);
+    scanf("%d", &AGENCIA);
+    for(x = 0; x < quantContas; x++){
+        if (AGENCIA == conta[x].agencia && CONTA == conta[x].numConta)
+        {
+            system("cls");
+            printf("=========== DADOS DO PROPRIETARIO DA CONTA ===========\n");
+            printf("Nome: %s\n", clientes[x].nome);
+            printf("Endereco: %s\n", clientes[x].endereco);
+            printf("Documento: %d\n", clientes[x].DOC);
+            printf("Telefone: %d\n", clientes[x].TEL);
+            printf("Codigo: %d\n", clientes[x].COD);
+            printf("======================================================\n");
+            printf("\nInforme o valor de saque: \n");
+            fflush(stdin);
+            scanf("%d", &saque);
+            if (saque < conta[x].saldo)
+            {
+                //Realizando operacao
+                printf("Descreve brevemente a transacao. - MAX 100 CARACTERES -\n");
+                fflush(stdin);
+                fgets(description, sizeof(description), stdin);
+                conta[x].saldo = conta[x].saldo - saque;
+
+                //Quantidade de notas
+                quantNotas200 = saque/200;
+                quantNotas100 = (saque%200)/100;
+                quantNotas50 = ((saque%200)%100)/50;
+                quantNotas20 = (((saque%200)%100)%50)/20;
+                quantNotas10 = ((((saque%200)%100)%50)%20)/10;
+                quantNotas5 = (((((saque%200)%100)%50)%20)%10)/5;
+                quantNotas2 = ((((((saque%200)%100)%50)%20)%10)%5)/2;
+
+                printf("Quantidade notas de 200: %d\n", quantNotas200);
+                printf("Quantidade notas de 100: %d\n", quantNotas100);
+                printf("Quantidade notas de 50: %d\n", quantNotas50);
+                printf("Quantidade notas de 20: %d\n", quantNotas20);
+                printf("Quantidade notas de 10: %d\n", quantNotas10);
+                printf("Quantidade notas de 5: %d\n", quantNotas5);
+                printf("Quantidade notas de 2: %d\n", quantNotas2);
+
+                //Cadastro
+                for(y = 0; y < MAX_transacoes; y++){
+                    if (transacoes[y].ativoTransacoes == 0)
+                    {
+                        strcpy(transacoes[y].description, description);
+                        strcpy(transacoes[y].type, "DEBITO");
+                        transacoes[y].ativoTransacoes = 1;
+                        transacoes[y].valor = saque;
+                        transacoes[y].conta = CONTA;
+                        transacoes[y].COD = clientes[y].COD;
+                        transacoes[y].tempo = time(NULL);
+                        quantTransacoes++;
+                        break;
+                    }
+                }
+                printf("Saque realizado com sucesso!\n");
+                printf("Para realizar outro saque, digite 1, ou 0 para sair: \n");
+                fflush(stdin);
+                scanf("%d", &op1);
+                if (op1 == 1)
+                {
+                    saques();
+                }
+                if (op1 == 0)
+                {
+                    gerenciarContas();
+                }
+            }else{
+                //Sem saldo suficiente
+                printf("Saldo insuficiente\n");
+                printf("Para tentar realizar outro saque escolha 0, ou 1 para sair: \n");
+                fflush(stdin);
+                scanf("%d", &op1);
+                if (op1 == 0)
+                {
+                    saques();
+                }
+                if (op1 == 1)
+                {
+                    gerenciarContas();
+                }
+            }
+        }
+    }
+}
+
+//Deposito
+void depositos(void){
+    system("cls");
+    fflush(stdin);
+    int x, y;
+    int AGENCIA, CONTA;
+    double deposito;
+    char description[100];
+    int op2;
+    printf("Digite o numero da conta a qual deseja realizar um deposito: \n");
+    scanf("%d", &CONTA);
+    printf("Digite a agencia correspondente: \n");
+    fflush(stdin);
+    scanf("%d", &AGENCIA);
+    for(x = 0; x < quantContas; x++){
+    	
+        if (AGENCIA == conta[x].agencia && CONTA == conta[x].numConta)
+        {
+            system("cls");
+            printf("=========== DADOS DO PROPRIETARIO DA CONTA ===========\n");
+            printf("Nome: %s\n", clientes[x].nome);
+            printf("Endereco: %s\n", clientes[x].endereco);
+            printf("Documento: %d\n", clientes[x].DOC);
+            printf("Telefone: %d\n", clientes[x].TEL);
+            printf("Codigo: %d\n", clientes[x].COD);
+            printf("======================================================\n");
+
+            //Recebendo valor
+            printf("\nInforme o valor de deposito: \n");
+            fflush(stdin);
+            scanf("%lf", &deposito);
+
+            //Recebendo detalhamento
+            printf("Escreva uma breve descricao do deposito -MAX 100 CARACTERES-.\n");
+            fflush(stdin);
+            fgets(description, sizeof(description), stdin);
+
+            //Atualizando
+            conta[x].saldo = conta[x].saldo + deposito;
+
+            //Cadastrando
+                for(y = 0; y < MAX_transacoes; y++){
+                    if (transacoes[y].ativoTransacoes == 0)
+                    {
+                        strcpy(transacoes[y].description, description);
+                        strcpy(transacoes[y].type, "CREDITO");
+                        transacoes[y].ativoTransacoes = 1;
+                        transacoes[y].valor = deposito;
+                        transacoes[y].conta = CONTA;
+                        transacoes[y].COD = clientes[x].COD;
+                        transacoes[y].tempo = time(NULL);
+                        quantTransacoes++;
+                        break;
+                    }
+                }
+            //Confirmando
+            printf("Deposito realizado com sucesso!\n");
+            printf("\nPara realizar outro deposito, digite 1, ou 0 para sair: \n");
+            fflush(stdin);
+            scanf("%d", &op2);
+            if (op2 == 1)
+            {
+                depositos();
+            }
+            if (op2 == 0)
+            {
+                gerenciarContas();
+            }
+        }
+    }
+}
+
+//Transferencia
+void transferencia(void){
+    system("cls");
+    fflush(stdin);
+    int op1;
+    int x, y, z;
+    double valorTransferencia;
+    int agenciaOrigem, numContaOrigem;
+    int agenciaDestino, numContaDestino;
+    printf("Digite a agencia de origem: \n");
+    scanf("%d", &agenciaOrigem);
+    fflush(stdin);
+    printf("Digite o numero da conta de origem: \n");
+    scanf("%d", &numContaOrigem);
+    for(x = 0; x < quantContas; x++){
+        if (agenciaOrigem == conta[x].agencia && numContaOrigem == conta[x].numConta)
+        {
+            system("cls");
+            printf("======================================================\n");
+            printf("Nome cliente: %s", clientes[x].nome);
+            printf("Endereco: %s\n", clientes[x].endereco);
+            printf("Documento: %d\n", clientes[x].DOC);
+            printf("Telefone: %d\n", clientes[x].TEL);
+            printf("Codigo: %d\n", clientes[x].COD);
+            printf("Saldo: %.2lf\n", conta[x].saldo);
+            printf("======================================================\n");
+
+            printf("\nDigite a agencia de destino: \n");
+            fflush(stdin);
+            scanf("%d", &agenciaDestino);
+            printf("Digite o numero da conta de destino: \n");
+            fflush(stdin);
+            scanf("%d", &numContaDestino);
+            for(y = 0; y < quantContas; y++){
+                if (agenciaDestino == conta[y].agencia && numContaDestino == conta[y].numConta){
+                    printf("======================================================\n");
+                    printf("Nome cliente: \n%s", clientes[y].nome);
+                    printf("Endereco: %s\n", clientes[y].endereco);
+                    printf("Documento: %d\n", clientes[y].DOC);
+                    printf("Telefone: %d\n", clientes[y].TEL);
+                    printf("Codigo: %d\n", clientes[y].COD);
+                    printf("Saldo: %.2lf\n", conta[y].saldo);
+                    printf("======================================================\n");
+
+                    //Recebendo valor
+                    printf("Digite o valor a ser transferido: \n");
+                    fflush(stdin);
+                    scanf("%lf", &valorTransferencia);
+                    if (valorTransferencia < conta[x].saldo)
+                    {
+                        conta[x].saldo = conta[x].saldo - valorTransferencia;
+                        conta[y].saldo = conta[y].saldo + valorTransferencia;
+                    }
+                    //Cadastrando
+                    for(z = 0; z < MAX_transacoes; z++){
+                        if (transacoes[z].ativoTransacoes == 0)
+                        {
+                            strcpy(transacoes[z].description, "transferencia realizada");
+                            strcpy(transacoes[z].type, "DEBITO");
+                            transacoes[z].ativoTransacoes = 1;
+                            transacoes[z].valor = valorTransferencia;
+                            transacoes[z].conta = conta[x].numConta;
+                            transacoes[z].COD = clientes[x].COD;
+                            transacoes[z].tempo = time(NULL);
+                            quantTransacoes++;
+
+                            strcpy(transacoes[z + 1].description, "transferencia recebida");
+                            strcpy(transacoes[z + 1].type, "CREDITO");
+                            transacoes[z + 1].ativoTransacoes = 1;
+                            transacoes[z + 1].valor = valorTransferencia;
+                            transacoes[z + 1].conta = conta[y].numConta;
+                            transacoes[z + 1].COD = clientes[y].COD;
+                            transacoes[z + 1].tempo = time(NULL);
+                            quantTransacoes++;
+
+                            //Confirmando
+                            printf("Tranferencia realizada com sucesso.");
+                            printf("Para realizar outra transferencia digite 0, ou 1 para sair: \n");
+                            fflush(stdin);
+                            scanf("%d", &op1);
+                            if (op1 == 0)
+                            {
+                                transferencia();
+                            }
+                            if (op1 == 1)
+                            {
+                                gerenciarContas();
+                            }
+                    	}
+                    }
+                }
+			}
+        }
+        else{
+            printf("Agencia ou conta inexistente!\n");
+        }         
+    }
+}
+
+//Extrato
+void extrato(void){
+    system("cls");
+    fflush(stdin);
+    int i, x, op1;
+    int agencia, numconta;
+    int dias, periodo;
+    time_t tempo, extratoTime;
+    printf("Digite a agencia: \n");
+    scanf("%d", &agencia);
+    printf("Digite o numero da conta: \n");
+    fflush(stdin);
+    scanf("%d", &numconta);
+    for (i = 0; i < MAX_CONTAS; i++)
+    {
+        if (agencia == conta[i].agencia && numconta == conta[i].numConta)
+        {
+            printf("\n==============Dados do cliente==============\n");
+            printf("Nome: %s\n", clientes[i].nome);
+            printf("Codigo: %d\n", clientes[i].COD);
+            printf("Endereco: %s", clientes[i].endereco);
+            printf("Telefone: %d\n", clientes[i].TEL);
+            printf("Documento: %d\n", clientes[i].DOC);
+            printf("SALDO: %.2lf\n", conta[i].saldo);
+            printf("\n=============================================\n");
+
+            printf("\nPeriodo em dias do extrato: \n");
+            fflush(stdin);
+            scanf("%d", &dias);
+
+            tempo = time(NULL);
+
+            periodo = dias * 24 * 60 * 60;
+            
+            for ( x = 0; x < MAX_transacoes; x++ )
+            {
+                if ( clientes[i].COD == transacoes[x].COD && periodo > (tempo - transacoes[x].tempo))
+                {
+                    printf("=============================================\n");
+                    printf("Tipo: %s\n", transacoes[x].type);
+                    printf("Descricao: %s\n", transacoes[x].description);
+                    printf("Valor: %.2lf\n", transacoes[x].valor);
+                    printf("=============================================\n");
+                }
+            }
+            
+            printf("Para puxar mais algum extrato, digite 1, ou 0 para sair\n");
+            fflush(stdin);
+            scanf("%d", &op1);
+            if(op1 == 1)
+            {
+                extrato();
+            }
+            if(op1 == 0)
+            {
+                gerenciarContas();
+            }
+        }
+    }
+}
